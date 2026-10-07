@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Project LoB - Playable Prototype</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100b;font-family:Arial,sans-serif;touch-action:none}
+#game{position:relative;width:100vw;height:100vh;background:#172b18;overflow:hidden}
+#world{position:absolute;width:1100px;height:700px;left:50%;top:50%;transform:translate(-50%,-50%);background:#244021;border:4px solid #795d31}
+.terrain{position:absolute;background:#183018;border:2px solid #31532f}
+.j1{left:245px;top:50px;width:210px;height:250px}.j2{right:245px;top:50px;width:210px;height:250px}
+.j3{left:245px;bottom:50px;width:210px;height:250px}.j4{right:245px;bottom:50px;width:210px;height:250px}
+.lane{position:absolute;background:#b59a68;border:5px solid #806744;box-shadow:inset 0 0 0 2px #d5bf91}
+.top{left:80px;top:75px;width:940px;height:65px;transform:rotate(0deg)}
+.mid{left:80px;top:317px;width:940px;height:65px}
+.bot{left:80px;bottom:75px;width:940px;height:65px}
+.base{position:absolute;width:95px;height:180px;background:#574027;border:4px solid #d3b05e;z-index:5;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;font-weight:bold}
+.bluebase{left:10px;top:260px;color:#79cfff}.golden{right:10px;top:260px;color:#ffca68}
+.turret{position:absolute;width:45px;height:45px;border-radius:50%;background:#d2b66c;border:5px solid #513b22;z-index:8}
+.turret:after{content:"";position:absolute;left:17px;top:-12px;width:7px;height:20px;background:#513b22}
+.t1{left:210px;top:85px}.t2{left:455px;top:115px}.t3{left:710px;top:85px}
+.t4{left:455px;top:327px}.t5{left:210px;top:327px}.t6{left:710px;top:327px}
+.t7{left:210px;bottom:85px}.t8{left:455px;bottom:115px}.t9{left:710px;bottom:85px}
+.monster{position:absolute;width:78px;height:78px;border-radius:50%;z-index:6;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:bold}
+.naga{left:510px;top:205px;background:#22604c;border:4px solid #d6ba61}.galon{left:510px;bottom:205px;background:#5b3b72;border:4px solid #d6ba61}
+.unit{position:absolute;z-index:15;transition:transform .05s}
+.hero{width:54px;height:54px;border-radius:50%;background:#277db4;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;box-shadow:0 3px 10px #000}
+.enemyhero{background:#a94343}
+.minion{width:20px;height:20px;border-radius:50%;background:#55b8ed;border:2px solid white}.eminion{background:#e86969}
+.hp{position:absolute;left:50%;transform:translateX(-50%);top:-10px;width:58px;height:6px;background:#411d1d;border:1px solid #111}.hp i{display:block;height:100%;background:#51c75b;width:100%}
+#ui{position:absolute;inset:0;pointer-events:none}
+#topbar{position:absolute;top:0;left:0;right:0;height:48px;background:#101711e8;border-bottom:1px solid #7f6332;color:#eee;display:flex;align-items:center;justify-content:center;gap:35px;font-size:12px;pointer-events:auto}
+#joy{position:absolute;left:24px;bottom:35px;width:135px;height:135px;border-radius:50%;border:2px solid #c4a25c;background:#111a13b8;pointer-events:auto}.knob{position:absolute;width:58px;height:58px;left:36px;top:36px;border-radius:50%;background:#806437;border:2px solid #d7bd79}
+.action{position:absolute;border-radius:50%;pointer-events:auto;color:#fff;font-weight:bold;border:3px solid #d7bd79;box-shadow:0 3px 10px #0008}.atk{right:28px;bottom:45px;width:82px;height:82px;background:#9c382e}.s1{right:122px;bottom:105px;width:55px;height:55px;background:#315e91}.s2{right:165px;bottom:50px;width:55px;height:55px;background:#4e458a}.ult{right:82px;bottom:145px;width:60px;height:60px;background:#765026}
+#msg{position:absolute;left:50%;top:58px;transform:translateX(-50%);background:#101711dd;border:1px solid #80663a;border-radius:8px;padding:6px 12px;font-size:11px;color:#f0d28c}
+#help{position:absolute;right:10px;top:58px;background:#101711cc;padding:6px;border-radius:6px;font-size:10px;color:#ddd}
+</style></head>
+<body>
+<div id="game">
+<div id="world">
+<div class="terrain j1"></div><div class="terrain j2"></div><div class="terrain j3"></div><div class="terrain j4"></div>
+<div class="lane top"></div><div class="lane mid"></div><div class="lane bot"></div>
+<div class="base bluebase">BLUE<br>BASE</div><div class="base golden">GOLDEN<br>PALACE</div>
+<div class="turret t1" data-hp="100"></div><div class="turret t2" data-hp="100"></div><div class="turret t3" data-hp="100"></div>
+<div class="turret t4" data-hp="100"></div><div class="turret t5" data-hp="100"></div><div class="turret t6" data-hp="100"></div>
+<div class="turret t7" data-hp="100"></div><div class="turret t8" data-hp="100"></div><div class="turret t9" data-hp="100"></div>
+<div class="monster naga" id="naga">🐍<br>NAGA<br>GUARDIAN</div>
+<div class="monster galon" id="galon">🦅<br>GALON<br>LORD</div>
+<div id="hero" class="unit hero" style="left:120px;top:322px"><i class="hp"><i></i></i>HERO</div>
+<div id="enemy" class="unit hero enemyhero" style="left:900px;top:322px"><i class="hp"><i></i></i>ENEMY</div>
+</div>
+<div id="ui">
+<div id="topbar"><b>⚔ PROJECT LoB</b><span>BLUE <b id="gold">0</b></span><span>⚡ LV <b id="lv">1</b></span><span>❤️ <b id="hp">100</b></span><span>15:00</span></div>
+<div id="msg">MLBB-style gameplay prototype — Move / Attack / Skills</div><div id="help">WASD / Joystick • Attack • Skills</div>
+<div id="joy"><div class="knob"></div></div>
+<button class="action atk" id="attack">ATK</button><button class="action s1" id="skill1">S1</button>
+<button class="action s2" id="skill2">S2</button><button class="action ult" id="ult">ULT</button>
+</div></div>
+<script>
+const hero=document.getElementById('hero'),enemy=document.getElementById('enemy'),world=document.getElementById('world');
+let x=120,y=322,hp=100,gold=0,level=1,keys={},joy={x:0,y:0},drag=false;
+function pos(){hero.style.left=x+'px';hero.style.top=y+'px'}
+function dist(){return Math.hypot(x-parseFloat(enemy.style.left),y-parseFloat(enemy.style.top))}
+function msg(t){document.getElementById('msg').textContent=t}
+function hit(dmg){
+ if(dist()<100){let ehp=enemy.querySelector('.hp i');let w=parseFloat(getComputedStyle(ehp).width)||58;w=Math.max(0,w-dmg*.58);ehp.style.width=w+'px';gold+=dmg;document.getElementById('gold').textContent=gold;msg('Enemy Hero hit! +'+dmg+' gold')}
+ else msg('Target is too far away');
+}
+document.getElementById('attack').onclick=()=>hit(10);
+document.getElementById('skill1').onclick=()=>hit(25);
+document.getElementById('skill2').onclick=()=>hit(35);
+document.getElementById('ult').onclick=()=>hit(60);
+document.addEventListener('keydown',e=>keys[e.key.toLowerCase()]=1);
+document.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
+function loop(){
+ let dx=0,dy=0;
+ if(keys.w||keys.arrowup)dy-=3;if(keys.s||keys.arrowdown)dy+=3;if(keys.a||keys.arrowleft)dx-=3;if(keys.d||keys.arrowright)dx+=3;
+ dx+=joy.x*2.8;dy+=joy.y*2.8;x=Math.max(105,Math.min(965,x+dx));y=Math.max(55,Math.min(590,y+dy));pos();requestAnimationFrame(loop)
+}loop();
+
+const pad=document.getElementById('joy'),knob=pad.querySelector('.knob');
+pad.addEventListener('pointerdown',e=>{drag=true;pad.setPointerCapture(e.pointerId)});
+pad.addEventListener('pointermove',e=>{if(!drag)return;let r=pad.getBoundingClientRect(),a=e.clientX-(r.left+r.width/2),b=e.clientY-(r.top+r.height/2),m=Math.hypot(a,b);if(m>40){a=a/m*40;b=b/m*40}knob.style.left=(67+a-29)+'px';knob.style.top=(67+b-29)+'px';joy.x=a/40;joy.y=b/40});
+pad.addEventListener('pointerup',()=>{drag=false;joy.x=joy.y=0;knob.style.left='36px';knob.style.top='36px'});
+setInterval(()=>{if(dist()<140){hp=Math.max(0,hp-2);document.getElementById('hp').textContent=hp;msg('Enemy attacking!')}},1200);
+</script></body></html>
